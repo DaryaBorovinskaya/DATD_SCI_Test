@@ -1,0 +1,277 @@
+﻿<Window x:Class="DATD_SCI_WPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DATD_SCI_WPF"
+        mc:Ignorable="d"
+        Title="УСПД-ИКС" Height="800" Width="1200" WindowStartupLocation="CenterScreen"
+        WindowState="Maximized" Loaded="Window_Loaded" Closing="Window_Closing">
+
+    <Window.Resources>
+        <local:GroupTitleConverter x:Key="GroupTitleConverter"/>
+
+        <DataTemplate x:Key="GroupHeaderTemplate">
+            <TextBlock Text="{Binding Name, Converter={StaticResource GroupTitleConverter}}"
+                   FontWeight="Bold"
+                   FontSize="14"
+                   Padding="5,5"
+                   Background="#FFEEEEEE"
+                   Margin="0,0,0,0"/>
+        </DataTemplate>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="0" VerticalAlignment="Top" Margin="20 20 20 0">
+            <GroupBox Header="Соединение" FontSize="14">
+                <DockPanel Margin="0,0,5,0"  >
+                    <DockPanel Margin="50 0 0 0" HorizontalAlignment="Left" DockPanel.Dock="Left">
+                        <!--
+                        <DataGrid x:Name="connectionDataGrid" CanUserSortColumns="False"
+                                  CanUserReorderColumns="False" CanUserAddRows="False" 
+                                  CanUserDeleteRows="False" CanUserResizeRows="False" 
+                                  CanUserResizeColumns="False"
+                                  ItemsSource="{Binding ConnectionDataTable}"
+                                  AutoGenerateColumns="True">
+
+                        </DataGrid>
+                        -->
+
+                        
+                        <StackPanel Width="200" VerticalAlignment="Center">
+                            <TextBlock HorizontalAlignment="Center" Text="IP Адрес"></TextBlock>
+                            <TextBox Text="{Binding IPaddressTextBox}"></TextBox>
+                        </StackPanel>
+                        <StackPanel VerticalAlignment="Center" Margin="100 0 0 0" Width="200">
+                            <TextBlock HorizontalAlignment="Center" Text="Порт"></TextBlock>
+                            <TextBox Text="{Binding PortTextBox}"></TextBox>
+                        </StackPanel>
+
+                    </DockPanel>
+                    <DockPanel HorizontalAlignment="Right">
+                        <StackPanel >
+                            <Button Width="Auto" MinWidth="200" Margin="0 0 0 10" 
+                                    Background="White" BorderBrush="Black"
+                                    Content="Установка соединения"
+                                    x:Name="setTCPconnectionButton"
+                                    Command="{Binding SetTCPconnectionClick}">
+                            </Button>
+                            <Button Width="Auto" MinWidth="200" Margin="0 0 0 10" 
+                                    Background="White" BorderBrush="Black"
+                                    Content="Завершение соединения"
+                                    x:Name="completionTCPconnectionButton"
+                                    Command="{Binding CompletionTCPconnectionClick}">
+                            </Button>
+                            <DockPanel VerticalAlignment="Bottom">
+                                <TextBlock DockPanel.Dock="Left" 
+                                           Text="Состояние соединения"></TextBlock>
+                                <Rectangle x:Name="connectionIndicator" 
+                                           Stroke="Black" Fill="{Binding ConnectionIndicatorColor}" Width="20"/>
+
+                            </DockPanel>
+
+                        </StackPanel>
+                    </DockPanel>
+                </DockPanel>
+            </GroupBox>
+        </DockPanel>
+        <DockPanel Grid.Row="1"  Margin="20 0 20 20">
+            <DockPanel DockPanel.Dock="Left" >
+                <StackPanel>
+                    <GroupBox VerticalAlignment="Top" 
+                              Header="Значения в памяти базового блока" FontSize="14">
+                        <DockPanel Margin="5">
+                            <DockPanel DockPanel.Dock="Left" Margin="0 0 50 0">
+                                <StackPanel>
+                                    <TextBlock Text="Время отправки телеизмерений"></TextBlock>
+                                    <TextBox 
+                                             Text="{Binding TimeSendTelemetryTextBox}"></TextBox>
+                                </StackPanel>
+
+                            </DockPanel>
+                            <DockPanel DockPanel.Dock="Right" HorizontalAlignment="Right">
+                                <StackPanel>
+                                    <Button Margin="0 0 0 10" Width="Auto" MinWidth="200" 
+                                            Background="White" BorderBrush="Black"
+                                            Content="Прочитать данные с базового блока"
+                                            x:Name="readDataBaseUnit"
+                                            Command="{Binding ReadDataBaseUnitClick}"></Button>
+                                    <Button Width="Auto" MinWidth="200" 
+                                            Background="White" BorderBrush="Black"
+                                            Content="Записать данные в базовый блок"
+                                            x:Name="writeDataBaseUnit"
+                                            Command="{Binding WriteDataBaseUnitClick}"></Button>
+                                </StackPanel>
+                            </DockPanel>
+                        </DockPanel>
+                    </GroupBox>
+                    <GroupBox VerticalAlignment="Bottom"
+                              Header="Значения в памяти индикатора" FontSize="14">
+                        <StackPanel Margin="5">
+                            <DataGrid x:Name="telemetryDataGrid" CanUserSortColumns="False"
+                                  CanUserReorderColumns="False" CanUserAddRows="False" 
+                                  CanUserDeleteRows="False" CanUserResizeRows="False" 
+                                  CanUserResizeColumns="False"
+                                  ItemsSource="{Binding TelemetryDataTable}"   
+                                  AutoGenerateColumns="False" HeadersVisibility="Column"
+                                      
+                                   Margin="0 0 0 5">
+
+
+                                <DataGrid.GroupStyle>
+                                    <GroupStyle>
+                                        <GroupStyle.HeaderTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Name, Converter={StaticResource GroupTitleConverter}}"
+                               FontWeight="Bold"
+                               FontSize="14"
+                               Padding="5"
+                               Background="#FFDDDDDD"/>
+                                            </DataTemplate>
+                                        </GroupStyle.HeaderTemplate>
+                                        <GroupStyle.ContainerStyle>
+                                            <Style TargetType="{x:Type GroupItem}">
+                                                <Setter Property="Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate TargetType="{x:Type GroupItem}">
+                                                            <StackPanel>
+                                                                <ContentPresenter ContentTemplate="{StaticResource GroupHeaderTemplate}"/>
+                                                                <ItemsPresenter/>
+                                                            </StackPanel>
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </GroupStyle.ContainerStyle>
+                                    </GroupStyle>
+                                </DataGrid.GroupStyle>
+
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="{Binding TelemetryDataColumnType}" 
+                            Binding="{Binding Type}"
+                            IsReadOnly="True"
+                            Width="Auto"/>
+                                    <DataGridTextColumn Header="{Binding TelemetryDataColumnPhaseA}" 
+                            Binding="{Binding PhaseA}"
+                            Width="100"/>
+                                    <DataGridTextColumn Header="{Binding TelemetryDataColumnPhaseB}" 
+                            Binding="{Binding PhaseB}"
+                            Width="100"/>
+                                    <DataGridTextColumn Header="{Binding TelemetryDataColumnPhaseC}" 
+                            Binding="{Binding PhaseC}"
+                            Width="100"/>
+                                </DataGrid.Columns>
+
+
+                                <!--
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Width="Auto" Header="Тип значения"></DataGridTextColumn>
+                                    <DataGridTextColumn Width="Auto" Header="Фаза А"></DataGridTextColumn>
+                                    <DataGridTextColumn Width="Auto" Header="Фаза В"></DataGridTextColumn>
+                                    <DataGridTextColumn Width="Auto" Header="Фаза С"></DataGridTextColumn>
+                                </DataGrid.Columns>
+                                -->
+                            </DataGrid>
+                            <DockPanel VerticalAlignment="Bottom">
+                                <DockPanel DockPanel.Dock="Left" Margin="0 0 50 0">
+                                    <DockPanel VerticalAlignment="Center">
+                                        <DockPanel DockPanel.Dock="Top" VerticalAlignment="Top" Margin="0 0 0 5">
+                                            <CheckBox Content="Фаза А" Margin="0 0 10 0"
+                                                      x:Name="phaseAcheckBox" Checked="phaseAcheckBox_Checked"></CheckBox>
+                                            <CheckBox Content="Фаза В" Margin="0 0 10 0"
+                                                      x:Name="phaseBcheckBox" Checked="phaseBcheckBox_Checked"></CheckBox>
+                                            <CheckBox Content="Фаза С" Margin="0 0 10 0"
+                                                      x:Name="phaseCcheckBox" Checked="phaseCcheckBox_Checked"></CheckBox>
+                                        </DockPanel>
+                                        <ProgressBar  VerticalAlignment="Top" Height="20" 
+                                                      x:Name="receiveProgressBar"
+                                                      Minimum="0" Maximum="100"
+                                                      Value="{Binding ReceiveProgressBar}"></ProgressBar>
+                                        
+                                    </DockPanel>
+                                </DockPanel>
+                                <DockPanel DockPanel.Dock="Right">
+                                    <StackPanel>
+                                        <Button Margin="0 0 0 10" Width="Auto" MinWidth="200" 
+                                                Background="White" BorderBrush="Black"
+                                                Content="Прочитать данные с индикатора"
+                                                x:Name="readDataIndicator"
+                                                Command="{Binding ReadDataIndicatorClick}"></Button>
+                                        <Button Margin="0 0 0 10" Width="Auto" MinWidth="200" 
+                                                Background="White" BorderBrush="Black"
+                                                Content="Записать данные на индикатор"
+                                                x:Name="writeDataIndicator"
+                                                Command="{Binding WriteDataIndicatorClick}"></Button>
+                                        <Button Width="Auto" MinWidth="200" 
+                                                Background="White" BorderBrush="Black"
+                                                Content="Очистить все данные в таблице"
+                                                x:Name="clearDataIndicator"
+                                                Command="{Binding ClearDataIndicatorClick}"></Button>
+                                    </StackPanel>
+                                </DockPanel>
+                            </DockPanel>
+                        </StackPanel>
+                    </GroupBox>
+                </StackPanel>
+            </DockPanel>
+            <DockPanel DockPanel.Dock="Right">
+                <GroupBox Header="Сервисная консоль" FontSize="14">
+                    <Grid Margin="20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="18*"/>
+                            <ColumnDefinition Width="277*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" ></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="*"></RowDefinition>
+                        </Grid.RowDefinitions>
+
+                        <TextBox Grid.Row="0" Height="30" Margin="0 0 0 10"
+                                 x:Name="serviceConsoleTextBox" Grid.ColumnSpan="2"
+                                 Text="{Binding ServiceConsoleTextBox}"></TextBox>
+                        <DockPanel Grid.Row="1" Margin="0 0 0 20" Grid.RowSpan="2" Grid.ColumnSpan="2" >
+                            <DockPanel HorizontalAlignment="Left">
+                                <Button Margin="0 0 10 20" Width="200" HorizontalAlignment="Left" 
+                                        Background="White" BorderBrush="Black"
+                                        Content="Отправить"
+                                        x:Name="sendButton"
+                                        Command="{Binding SendClick}"></Button>
+                                <Button Margin="0 0 0 20" Width="20" HorizontalAlignment="Left" 
+                                        Background="White" BorderBrush="Black"
+                                        x:Name="serviceConsoleHelpButton" Content="?"
+                                        Command="{Binding SendQuestionClick}"></Button>
+                            </DockPanel>
+                            <DockPanel HorizontalAlignment="Right">
+                                <CheckBox IsChecked="{Binding Path=IsPrintTime, Mode=TwoWay}" Content="Метка времени"
+                                          x:Name="timeCheckBox" ></CheckBox>
+                            </DockPanel>
+                        </DockPanel>
+                        <Button Grid.Row="2" Width="200" HorizontalAlignment="Left" 
+                                VerticalAlignment="Center"
+                                Background="White" BorderBrush="Black"
+                                Content="Очистить лог" MaxHeight="50"
+                                x:Name="clearLog" Grid.ColumnSpan="2"
+                                Command="{Binding ClearLogClick}"/>
+                        <TextBox Grid.Row="3" TextWrapping="Wrap" 
+                                 AcceptsReturn="True" 
+                                 IsReadOnly="True"
+                                 ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                 x:Name="connectionLog" 
+                                 Text="{Binding ConnectionLogTextBox}" Grid.ColumnSpan="2"></TextBox>
+                    </Grid>
+
+
+
+
+                </GroupBox>
+            </DockPanel>
+        </DockPanel>
+    </Grid>
+</Window>
